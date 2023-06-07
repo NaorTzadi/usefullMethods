@@ -1,0 +1,160 @@
+package org.example;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.awt.*;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriver;
+// להקליד בתיבה של הלינק "chrome://version" להקיש enter וכך לדעת את הגרסה הנוכחית של chrome במחשב
+// https://chromedriver.chromium.org/downloads מכאן ניתן להוריד גרסאות
+// ללחוץ על הגרסה הנוכחית שבה אנחנו משתמשים מבין האופציות שמופיעות
+// לאחר מכן יופיע עוד תפריט ונלחץ על chromedriver_win32.zip
+// נחלץ את את chromedriver_win32.zip
+// נקבל chromedriver.exe
+// File ->
+public class Main {
+    public static Scanner scanner=new Scanner(System.in);
+    public static ChromeDriver chromeDriver;
+    public static WebDriver chromeWebDriver;
+    public static void main(String[] args) {
+        System.setProperty("webdriver.openqa.driver", "path/to/chromedriver.exe");
+        chromeDriver=new ChromeDriver();
+        String originalURL="https://www.google.co.il/";
+        chromeDriver.get(originalURL);
+        String initialPageSource = chromeDriver.getPageSource();
+
+        chromeWebDriver=new ChromeDriver();
+        browseUnderTheRadar(originalURL);
+
+
+
+        //getPageToScreenCenter();
+        //pageAdjusting();
+        //System.out.println("isConnected = "+isConnected());
+        //browseUnderTheRadar(originalURL);
+        //System.out.println(waitForPageReload(Duration.ofSeconds(5)));
+        //refreshPage();
+        //System.out.println("did url changed: "+didURLChanged(originalURL));
+        //System.out.println(getCurrentDeviceIPAddress());
+        //System.out.println(didPageRefresh("did page refreshed: "+initialPageSource));
+        //try {Thread.sleep(3000);}catch (InterruptedException e){throw new RuntimeException(e);}
+
+        //String pageTitle=chromeDriver.getTitle();
+        //System.out.println(pageTitle);
+
+        System.out.println("ok");
+    }
+
+    private static void refreshPage(){
+        chromeDriver.navigate().refresh();
+        WebDriverWait wait = new WebDriverWait(chromeDriver, Duration.ofSeconds(0)); // נחכה 0 שניות
+        try {
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            alert.accept();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+    }
+    private static boolean didURLChanged(String originalURL){
+        return !chromeDriver.getCurrentUrl().equals(originalURL);
+    }
+    private static boolean isConnected(){
+        try {
+            InetAddress address = InetAddress.getByName("8.8.8.8");
+            boolean isReachable = address.isReachable(5000);
+            if (isReachable) {
+                System.out.println("Internet connection is available.");
+                return true;
+            } else {
+                System.out.println("No internet connection.");
+                return false;
+            }
+        } catch (UnknownHostException e) {
+            System.out.println("Unknown host: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+            return false;
+        }
+    }
+    private static String getCurrentDeviceIPAddress(){
+        String ipAddress=null;
+        try {
+            InetAddress localHost = InetAddress.getLocalHost();
+            ipAddress = localHost.getHostAddress();
+            System.out.println("Current IP address: " + ipAddress);
+        } catch (UnknownHostException e) {
+            System.out.println("Failed to retrieve the IP address: " + e.getMessage());
+        }
+        return ipAddress;
+    }
+    private static void browseUnderTheRadar(String url) {
+        chromeWebDriver.close(); // כדי לסגור את החלון שנפתח בהתחלה
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+    private static void getTheTime() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedTime = currentTime.format(formatter);
+        System.out.println("Current time: " + formattedTime);
+    }
+    private static boolean didPageRefresh(String initialPageSource){
+        String refreshedPageSource = chromeDriver.getPageSource();
+        boolean isPageRefreshed = !initialPageSource.equals(refreshedPageSource);
+        return isPageRefreshed;
+    }
+    private static boolean waitForPageReload(Duration timeoutSeconds) {
+        WebDriverWait wait = new WebDriverWait(chromeDriver, timeoutSeconds);
+        return wait.until((ExpectedCondition<Boolean>) webDriver -> {
+            String readyState = ((JavascriptExecutor) webDriver).executeScript("return document.readyState").toString();
+            return readyState.equals("complete");
+        });
+    }
+    private static void pageAdjusting(){
+        chromeDriver.manage().window().maximize();
+        try {Thread.sleep(2000);}catch (InterruptedException e){throw new RuntimeException(e);}
+
+        chromeDriver.manage().window().minimize();
+        try {Thread.sleep(2000);}catch (InterruptedException e){throw new RuntimeException(e);}
+
+        Point point=new Point(-2000,0);
+        chromeDriver.manage().window().setPosition(point);
+        try {Thread.sleep(2000);}catch (InterruptedException e){throw new RuntimeException(e);}
+
+        chromeDriver.manage().window().setPosition(new org.openqa.selenium.Point(0, 0));
+        try {Thread.sleep(2000);}catch (InterruptedException e){throw new RuntimeException(e);}
+
+        Dimension size = new Dimension(400, 600);
+        chromeDriver.manage().window().setSize(size);
+    }
+    private static void getPageToScreenCenter(){
+        Dimension size = new Dimension(800, 600);
+        chromeDriver.manage().window().setSize(size);
+        JavascriptExecutor js = (JavascriptExecutor) chromeDriver;
+        long screenWidth = (long) js.executeScript("return window.screen.width;");
+        long screenHeight = (long) js.executeScript("return window.screen.height;");
+        int posX = (int) ((screenWidth - size.getWidth()) / 2);
+        int posY = (int) ((screenHeight - size.getHeight()) / 2);
+        chromeDriver.manage().window().setPosition(new org.openqa.selenium.Point(posX, posY));
+    }
+
+
+}
