@@ -185,6 +185,8 @@ public class Main {
         if (mismatchCount > maxMismatches) return "";
         return original;
     }
+    public static String getFormattedTime() {return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));}
+
 
 
 }
