@@ -1,0 +1,70 @@
+package org.example;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.util.Scanner;
+import java.util.regex.Pattern;
+
+public class Main {
+    private static final String url="https://www.rsssf.org/tablesi/isra2022.html";
+    public static void main(String[] args) {
+
+        Pattern pattern = Pattern.compile("^\\s*\\d+\\.");
+
+
+        Document document=null;
+        try {
+            Connection connection = Jsoup.connect(url);
+            document = connection.get();
+            //System.out.println(document.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Scanner scanner=new Scanner(System.in);
+        System.out.println("choose a football team");
+        String footballTeamByUser=scanner.nextLine();
+
+
+        if(document.toString().contains(footballTeamByUser)){
+            String htmlContent = document.toString();
+            String[] lines = htmlContent.split("\\r?\\n");
+            for (String line : lines) {
+                if (line.contains(footballTeamByUser)) {
+
+                    String[] parts = line.split("-");
+                    String leftScoreStr = parts[0].replaceAll("\\D+", "").trim();
+                    String rightScoreStr = parts[1].replaceAll("\\D+", "").trim();
+
+                    if (leftScoreStr.isEmpty() || rightScoreStr.isEmpty()||pattern.matcher(line).find()) {
+                        continue;
+                    }
+
+                    int leftScore = Integer.parseInt(leftScoreStr);
+                    int rightScore = Integer.parseInt(rightScoreStr);
+
+                    if (leftScore == rightScore) {
+                        System.out.println(footballTeamByUser + " - Draw: " + leftScore + " - " + rightScore);
+                    } else if (line.indexOf(footballTeamByUser) < line.indexOf("-")) {
+                        if (leftScore > rightScore) {
+                            System.out.println(footballTeamByUser + " - Won: " + leftScore + " - " + rightScore);
+                        } else {
+                            System.out.println(footballTeamByUser + " - Lost: " + leftScore + " - " + rightScore);
+                        }
+                    } else {
+                        if (rightScore > leftScore) {
+                            System.out.println(footballTeamByUser + " - Won: " + rightScore + " - " + leftScore);
+                        } else {
+                            System.out.println(footballTeamByUser + " - Lost: " + rightScore + " - " + leftScore);
+                        }
+                    }
+                }
+            }
+        }else {
+            System.out.println("team not found!");
+        }
+
+
+
+    }
+}
