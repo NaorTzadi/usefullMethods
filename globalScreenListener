@@ -31,7 +31,7 @@ public class GlobalScreen {
             @Override
             public void nativeKeyPressed(NativeKeyEvent e) {
                 if (e.getKeyCode() == NativeKeyEvent.VC_SHIFT) {
-                   
+                   // put your method/code here
                 } else if (e.getKeyCode() == NativeKeyEvent.VC_ESCAPE) {
                     cancelled[0] = true;
                     cleanupKeyListener(this);
