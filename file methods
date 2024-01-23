@@ -1,0 +1,35 @@
+public static File promptUserToSelectAFileFromLocalFiles() {
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Choose a File");
+    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    JFrame frame = new JFrame();
+    frame.setUndecorated(true);
+    frame.setOpacity(0.0f);
+    frame.setLocationRelativeTo(null);
+    frame.setAlwaysOnTop(true);
+    frame.setVisible(true);
+    int result = fileChooser.showOpenDialog(frame);
+    frame.dispose();
+
+    if (result == JFileChooser.APPROVE_OPTION) {
+        File selectedFile = fileChooser.getSelectedFile();
+        String fileExtension = getFileExtension(selectedFile);
+
+        // Example directory path, adjust as necessary
+        String directoryPath = "C:/example/path/";
+        String newFileName = "newFile." + fileExtension; // Use the file extension from selected file
+
+        File newFile = new File(directoryPath, newFileName);
+        // Additional code to create or use the new file as required
+        return newFile;
+    }
+    return null;
+}
+public static String getFileExtension(File file) {
+    String fileName = file.getName();
+    if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
+        return fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+    } else {
+        return "";
+    }
+}
